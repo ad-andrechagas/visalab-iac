@@ -1,3 +1,6 @@
+# Visalab IAC Development Environment #
+#######################################
+
 terraform {
   required_providers {
     aws = {
@@ -20,6 +23,7 @@ terraform {
     encrypt = "true"
   }
 }
+
 # =================================================================
 
 resource "random_pet" "this" {
@@ -40,3 +44,7 @@ module "visa-bucket" {
     enabled = true
   }
 }
+# Under construction
+# module "visa-rds" {
+#  source = "git@github.com:ad-andrechagas/tf-module-rds.git"
+#}
