@@ -20,14 +20,15 @@ terraform {
     encrypt = "true"
   }
 }
+# =================================================================
 
 resource "random_pet" "this" {
   length = 2
 }
 
-
-module "bucket" {
-  source = "../../../tf-modules/dev/s3/"
+module "visa-bucket" {
+  # source = "../../../tf-modules/dev/s3/"
+  source = "git@github.com:ad-andrechagas/tf-module-s3.git"
   name   = "visalab-${random_pet.this.id}"
   tags = {
     Name        = "VisaLab Bucket"
