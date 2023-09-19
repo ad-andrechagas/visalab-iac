@@ -25,7 +25,7 @@ terraform {
 }
 
 # =================================================================
-
+# This is optional as it is for giving a randomic name in cloud.
 resource "random_pet" "this" {
   length = 2
 }
