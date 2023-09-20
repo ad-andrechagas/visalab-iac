@@ -47,6 +47,6 @@ module "visa-bucket" {
 # Under construction
 module "visa-rds" {
   source                 = "git@github.com:ad-andrechagas/tf-module-rds.git"
-  identifier             = "ABCDE202023"
+  identifier             = "dev-demodb"
   # Add more RDS configuration options as needed
 }
