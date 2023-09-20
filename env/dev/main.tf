@@ -32,7 +32,6 @@ resource "random_pet" "this" {
 # =================================================================
 
 module "visa-bucket" {
-  # source = "../../../tf-modules/dev/s3/"
   source = "git@github.com:ad-andrechagas/tf-module-s3.git"
   name   = "visalab-${random_pet.this.id}"
   tags = {
@@ -46,6 +45,9 @@ module "visa-bucket" {
   }
 }
 # Under construction
-# module "visa-rds" {
-#  source = "git@github.com:ad-andrechagas/tf-module-rds.git"
-#}
+module "visa-rds" {
+  source = "git@github.com:ad-andrechagas/tf-module-rds.git"
+  name   = vsdb_1
+
+  # Add more RDS configuration options as needed
+}
