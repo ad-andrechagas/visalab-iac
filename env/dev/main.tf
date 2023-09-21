@@ -43,10 +43,16 @@ module "visa-bucket" {
   versioning = {
     enabled = true
   }
+  
+
+
+# Add more S3 configuration options as needed
 }
-# Under construction
+
 module "visa-rds" {
   source                 = "git@github.com:ad-andrechagas/tf-module-rds.git"
-  identifier             = "dev-demodb"
-  # Add more RDS configuration options as needed
+  db_instance_identifier             = "demodb"
+  
+
+# Add more RDS configuration options as needed
 }
