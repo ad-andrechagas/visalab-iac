@@ -42,7 +42,11 @@ locals {
   vpc_cidr = "10.0.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 
-  tags = local.tags
+  tags = {
+    Owner       = "Advision Consulting LTDA"
+    Team        = "VS-Lab"
+    Environment = "DEV"
+  }
 }
 
 resource "random_pet" "this" {
@@ -72,17 +76,7 @@ resource "aws_iam_role" "this" {
 EOF
 }
 
-
 module "s3_bucket" {
-  source = "git@github.com:ad-andrechagas/tf-module-s3.git"
-  
-  bucket = "dev-${random_pet.this.id}"
-  tags   = local.tags
-
-  force_destroy = true
-}
-
-module "vslab_bucket" {
   source = "git@github.com:ad-andrechagas/tf-module-s3.git"
 
   bucket = "vsbucket-dev"
@@ -92,7 +86,6 @@ module "vslab_bucket" {
 }
 
 module "rds" {
-  #source = "../../"
   source = "git@github.com:ad-andrechagas/tf-module-rds.git"
 
   identifier                     = "${local.name}-dev"
