@@ -34,6 +34,17 @@ locals {
   }
 }
 
+locals {
+  name    = "vslab"
+  region  = "us-east-1"
+  region2 = "us-east-2"
+
+  vpc_cidr = "10.0.0.0/16"
+  azs      = slice(data.aws_availability_zones.available.names, 0, 3)
+
+  tags = local.tags
+}
+
 resource "random_pet" "this" {
   length = 1
 }
@@ -74,11 +85,90 @@ module "s3_bucket" {
 module "vslab_bucket" {
   source = "git@github.com:ad-andrechagas/tf-module-s3.git"
 
-  bucket = "vsbucket-dev1"
+  bucket = "vsbucket-dev"
   tags   = local.tags
 
   force_destroy = true
 }
+
+module "rds" {
+  #source = "../../"
+  source = "git@github.com:ad-andrechagas/tf-module-rds.git"
+
+  identifier                     = "${local.name}-dev"
+  instance_use_identifier_prefix = true
+
+  create_db_option_group    = false
+  create_db_parameter_group = false
+
+  # All available versions: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html#PostgreSQL.Concepts
+  engine               = "postgres"
+  engine_version       = "15"
+  family               = "postgres15" # DB parameter group
+  major_engine_version = "15"         # DB option group
+  instance_class       = "db.t4g.large"
+
+  allocated_storage = 20
+
+  # NOTE: Do NOT use 'user' as the value for 'username' as it throws:
+  # "Error creating DB Instance: InvalidParameterValue: MasterUsername
+  # user cannot be used as it is a reserved word used by the engine"
+  db_name  = "vslabdbdev"
+  username = "vslab"
+  port     = 5432
+
+  db_subnet_group_name   = module.vpc.database_subnet_group
+  vpc_security_group_ids = [module.security_group.security_group_id]
+
+  maintenance_window      = "Mon:00:00-Mon:03:00"
+  backup_window           = "03:00-06:00"
+  backup_retention_period = 0
+
+  tags = local.tags
+}
+################################################################################
+# Supporting Resources
+################################################################################
+
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "~> 5.0"
+
+  name = local.name
+  cidr = local.vpc_cidr
+
+  azs              = local.azs
+  public_subnets   = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k)]
+  private_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 3)]
+  database_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 6)]
+
+  create_database_subnet_group = true
+
+  tags = local.tags
+}
+
+module "security_group" {
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "~> 5.0"
+
+  name        = local.name
+  description = "Complete PostgreSQL example security group"
+  vpc_id      = module.vpc.vpc_id
+
+  # ingress
+  ingress_with_cidr_blocks = [
+    {
+      from_port   = 5432
+      to_port     = 5432
+      protocol    = "tcp"
+      description = "PostgreSQL access from within VPC"
+      cidr_blocks = module.vpc.vpc_cidr_block
+    },
+  ]
+
+  tags = local.tags
+}
+
 
 # To be tested ... 
 # =======================================
@@ -377,5 +467,33 @@ module "vslab_bucket" {
 #   ]
 # }
 # =======================================
+
+################################################################################
+# # RDS Automated Backups Replication Module
+# ################################################################################
+
+# provider "aws" {
+#   alias  = "region2"
+#   region = local.region2
+# }
+
+# module "kms" {
+#   source      = "terraform-aws-modules/kms/aws"
+#   version     = "~> 1.0"
+#   description = "KMS key for cross region automated backups replication"
+
+#   # Aliases
+#   aliases                 = [local.name]
+#   aliases_use_name_prefix = true
+
+#   key_owners = [data.aws_caller_identity.current.arn]
+
+#   tags = local.tags
+
+#   providers = {
+#     aws = aws.region2
+#   }
+# }
+
 
 
