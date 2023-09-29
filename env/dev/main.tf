@@ -36,7 +36,6 @@ locals {
 
 locals {
   name    = "vslab"
-  region  = local.region
   region2 = "us-east-2"
 
   vpc_cidr = "10.0.0.0/16"
@@ -93,7 +92,7 @@ module "rds" {
   engine_version       = "15"
   family               = "postgres15" # DB parameter group
   major_engine_version = "15"         # DB option group
-  instance_class       = "db.t4g.large"
+  instance_class       = "db.t4g.micro"
 
   allocated_storage = 20
 
