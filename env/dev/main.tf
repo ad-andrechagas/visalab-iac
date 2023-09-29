@@ -36,7 +36,7 @@ locals {
 
 locals {
   name    = "vslab"
-  region  = "us-east-1"
+  region  = local.region
   region2 = "us-east-2"
 
   vpc_cidr = "10.0.0.0/16"
