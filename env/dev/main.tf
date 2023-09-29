@@ -28,14 +28,14 @@ provider "aws" {
 terraform {
   backend "s3" {
     bucket  = "lab-terraform-state-bucket"
-    key     = "qa/terraform.tfstate"
+    key     = "dev/terraform.tfstate"
     region  = "us-east-1"
     encrypt = "true"
   }
 }
 
 locals {
-  bucket_name = "s3-bucket-${random_pet.this.id}"
+  bucket_name = "vs-bucket-${random_pet.this.id}"
   region      = "us-east-1"
   tags = {
     Owner       = "Advision Consulting LTDA"
@@ -45,7 +45,7 @@ locals {
 }
 
 resource "random_pet" "this" {
-  length = 2
+  length = 1
 }
 
 resource "aws_kms_key" "objects" {
@@ -74,7 +74,7 @@ EOF
 
 module "s3_bucket" {
   source = "git@github.com:ad-andrechagas/tf-module-s3.git"
-
+  
   bucket = "dev-${random_pet.this.id}"
   tags   = local.tags
 
@@ -84,7 +84,7 @@ module "s3_bucket" {
 module "vslab_bucket" {
   source = "git@github.com:ad-andrechagas/tf-module-s3.git"
 
-  bucket = "dev-1"
+  bucket = "vsbucket-dev1"
   tags   = local.tags
 
   force_destroy = true
