@@ -1,28 +1,8 @@
-# Complete S3 bucket with most of supported features enabled
+# S3 bucket Analytics Configurations
 
-Configuration in this directory creates S3 bucket which demos such capabilities:
-- static web-site hosting
-- access logging (for S3, ELB and ALB/NLB)
-- versioning
-- CORS
-- lifecycle rules
-- server-side encryption
-- object locking
-- grants (required for CloudFront logs)
+Configuration in this directory creates an S3 bucket with several analytics configurations including a different destination for analytics reports generated.
 
-Please check [S3 replication example](https://github.com/terraform-aws-modules/terraform-aws-s3-bucket/tree/master/examples/s3-replication) to see Cross-Region Replication (CRR) supported by this module.
-
-## Usage
-
-To run this example you need to execute:
-
-```bash
-$ terraform init
-$ terraform plan
-$ terraform apply
-```
-
-Note that this example may create resources which cost money. Run `terraform destroy` when you don't need these resources.
+Please check [complete example](https://github.com/terraform-aws-modules/terraform-aws-s3-bucket/tree/master/examples/complete) to see all other features supported by this module.
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
@@ -44,22 +24,17 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_cloudfront_log_bucket"></a> [cloudfront\_log\_bucket](#module\_cloudfront\_log\_bucket) | ../../ | n/a |
-| <a name="module_log_bucket"></a> [log\_bucket](#module\_log\_bucket) | ../../ | n/a |
-| <a name="module_s3_bucket"></a> [s3\_bucket](#module\_s3\_bucket) | ../../ | n/a |
-| <a name="module_simple_bucket"></a> [simple\_bucket](#module\_simple\_bucket) | ../../ | n/a |
+| <a name="module_analytics_and_inventory_destination_bucket"></a> [analytics\_and\_inventory\_destination\_bucket](#module\_analytics\_and\_inventory\_destination\_bucket) | ../../ | n/a |
+| <a name="module_analytics_configuration_bucket"></a> [analytics\_configuration\_bucket](#module\_analytics\_configuration\_bucket) | ../../ | n/a |
+| <a name="module_analytics_destination_bucket"></a> [analytics\_destination\_bucket](#module\_analytics\_destination\_bucket) | ../../ | n/a |
+| <a name="module_inventory_source_bucket"></a> [inventory\_source\_bucket](#module\_inventory\_source\_bucket) | ../.. | n/a |
 
 ## Resources
 
 | Name | Type |
 |------|------|
-| [aws_iam_role.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
-| [aws_kms_key.objects](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
 | [random_pet.this](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/pet) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
-| [aws_canonical_user_id.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/canonical_user_id) | data source |
-| [aws_cloudfront_log_delivery_canonical_user_id.cloudfront](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/cloudfront_log_delivery_canonical_user_id) | data source |
-| [aws_iam_policy_document.bucket_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 
 ## Inputs
 
@@ -74,8 +49,6 @@ No inputs.
 | <a name="output_s3_bucket_bucket_regional_domain_name"></a> [s3\_bucket\_bucket\_regional\_domain\_name](#output\_s3\_bucket\_bucket\_regional\_domain\_name) | The bucket region-specific domain name. The bucket domain name including the region name, please refer here for format. Note: The AWS CloudFront allows specifying S3 region-specific endpoint when creating S3 origin, it will prevent redirect issues from CloudFront to S3 Origin URL. |
 | <a name="output_s3_bucket_hosted_zone_id"></a> [s3\_bucket\_hosted\_zone\_id](#output\_s3\_bucket\_hosted\_zone\_id) | The Route 53 Hosted Zone ID for this bucket's region. |
 | <a name="output_s3_bucket_id"></a> [s3\_bucket\_id](#output\_s3\_bucket\_id) | The name of the bucket. |
-| <a name="output_s3_bucket_lifecycle_configuration_rules"></a> [s3\_bucket\_lifecycle\_configuration\_rules](#output\_s3\_bucket\_lifecycle\_configuration\_rules) | The lifecycle rules of the bucket, if the bucket is configured with lifecycle rules. If not, this will be an empty string. |
-| <a name="output_s3_bucket_policy"></a> [s3\_bucket\_policy](#output\_s3\_bucket\_policy) | The policy of the bucket, if the bucket is configured with a policy. If not, this will be an empty string. |
 | <a name="output_s3_bucket_region"></a> [s3\_bucket\_region](#output\_s3\_bucket\_region) | The AWS region this bucket resides in. |
 | <a name="output_s3_bucket_website_domain"></a> [s3\_bucket\_website\_domain](#output\_s3\_bucket\_website\_domain) | The domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records. |
 | <a name="output_s3_bucket_website_endpoint"></a> [s3\_bucket\_website\_endpoint](#output\_s3\_bucket\_website\_endpoint) | The website endpoint, if the bucket is configured with a website. If not, this will be an empty string. |
