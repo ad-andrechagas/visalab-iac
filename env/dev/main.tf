@@ -1,11 +1,37 @@
-provider "aws" {
-  region = local.region
+# provider "aws" {
+#   region = local.region
 
-  # Make it faster by skipping something
-  skip_metadata_api_check     = true
-  skip_region_validation      = true
-  skip_credentials_validation = true
-  skip_requesting_account_id  = true
+#   # Make it faster by skipping something
+#   skip_metadata_api_check     = true
+#   skip_region_validation      = true
+#   skip_credentials_validation = true
+#   skip_requesting_account_id  = true
+# }
+
+# Visalab IAC Development Environment #
+#######################################
+
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+# Configure the AWS Provider
+provider "aws" {
+  region = "us-east-1"
+}
+
+terraform {
+  backend "s3" {
+    bucket  = "lab-terraform-state-bucket"
+    key     = "qa/terraform.tfstate"
+    region  = "us-east-1"
+    encrypt = "true"
+  }
 }
 
 locals {
@@ -50,6 +76,15 @@ module "s3_bucket" {
   source = "git@github.com:ad-andrechagas/tf-module-s3.git"
 
   bucket = "dev-${random_pet.this.id}"
+  tags   = local.tags
+
+  force_destroy = true
+}
+
+module "vslab_bucket" {
+  source = "git@github.com:ad-andrechagas/tf-module-s3.git"
+
+  bucket = "dev-1"
   tags   = local.tags
 
   force_destroy = true
